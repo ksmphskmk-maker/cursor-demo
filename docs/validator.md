@@ -127,3 +127,4 @@ getValidEmails가 validator.md 스펙을 따르는지 확인하고, 어긋나면
 @src/email.js @Docs validator.js
 getValidEmails를 validator.js 스펙에 맞게 리팩터링해줘.
 ```
+

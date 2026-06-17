@@ -103,6 +103,31 @@ normalizeEmail('  Alice@Example.COM  '); // 'alice@example.com'
 
 `validator.js`의 상세 스펙과 리팩터링 규칙은 [docs/validator.md](docs/validator.md)를 참고하세요.
 
+## 릴리스 노트
+
+### v1.0.0
+
+외부 패키지 없이 RFC 5322 기반 이메일 검증·추출·인증 기능을 제공하는 첫 정식 릴리스입니다.
+
+#### ✨ 기능
+
+- **`isValidEmail`** — RFC 5322 형식 검증 및 RFC 3696 길이 제한(로컬 파트 64자, 전체 254자) 적용
+- **IP 리터럴 검증 개선** — IPv4 옥텟에서 `00` 등 불법 값 거부
+- **`email.js`** — 사용자 배열에서 이메일 추출(`extractEmails`), 유효 이메일 필터링(`getValidEmails`), 중복 제거(`uniqueValidEmails`)
+- **`auth.js`** — 이메일·비밀번호 형식 검증 로그인(`login`)
+- **`utils.js`** — 이메일 정규화(`normalizeEmail`: trim, 소문자 변환)
+- **테스트** — Node.js 내장 `node:test`로 `extractEmails`, `getValidEmails` 검증 (`npm test`)
+- **문서** — `docs/validator.md` 스펙 문서 및 `README.md`(설치, API 사용법, 프로젝트 구조)
+
+#### 🐛 버그 수정
+
+- 해당 없음
+
+#### 🧹 기타
+
+- ES Module(`"type": "module"`) 프로젝트 구조 및 엔트리 포인트(`src/index.js`) 구성
+- 외부 npm 의존성 없음 (Node.js 18+)
+
 ## 라이선스
 
 ISC
