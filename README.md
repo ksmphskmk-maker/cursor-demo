@@ -96,7 +96,7 @@ login('invalid', '');
 ```js
 import { normalizeEmail } from './src/utils.js';
 
-normalizeEmail('  Alice@Example.COM  '); // 'alice@example.com'
+normalizeEmail('  Alice@Example.COM  '); //F// 'alice@example.com'
 ```
 
 ## 스펙 문서
@@ -123,7 +123,7 @@ normalizeEmail('  Alice@Example.COM  '); // 'alice@example.com'
 
 - 해당 없음
 
-#### 🧹 기타
+####.#### 🧹 기타
 
 - ES Module(`"type": "module"`) 프로젝트 구조 및 엔트리 포인트(`src/index.js`) 구성
 - 외부 npm 의존성 없음 (Node.js 18+)
