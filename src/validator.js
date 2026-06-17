@@ -27,6 +27,38 @@ const MAX_EMAIL_LENGTH = 254;
 const MAX_LOCAL_PART_LENGTH = 64;
 
 /**
+ * RFC 5322 정규식 실행 전 O(n) 구조 검사 — ReDoS 완화.
+ * @param {string} email - 검증할 이메일
+ * @param {number} atIndex - @ 위치
+ * @returns {boolean}
+ */
+function passesStructuralChecks(email, atIndex) {
+  if (email.indexOf('@') !== atIndex) return false;
+
+  for (let i = 0; i < email.length; i++) {
+    const code = email.charCodeAt(i);
+    if (code <= 32 || code === 127) return false;
+  }
+
+  const local = email.slice(0, atIndex);
+  const domain = email.slice(atIndex + 1);
+  if (domain.length === 0) return false;
+
+  const isIpLiteral = domain.startsWith('[') && domain.endsWith(']');
+  if (!isIpLiteral && !domain.includes('.')) return false;
+
+  if (!local.startsWith('"')) {
+    if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) return false;
+  }
+
+  if (!isIpLiteral) {
+    if (domain.startsWith('.') || domain.endsWith('.') || domain.includes('..')) return false;
+  }
+
+  return true;
+}
+
+/**
  * 이메일 문자열이 RFC 5322 형식과 RFC 3696 길이 제한을 만족하는지 검증한다.
  * @param {string} email - 검증할 이메일
  * @returns {boolean} 유효하면 true
@@ -37,6 +69,7 @@ export function isValidEmail(email) {
   const atIndex = email.lastIndexOf('@');
   if (atIndex <= 0 || atIndex > MAX_LOCAL_PART_LENGTH) return false;
   if (email.length > MAX_EMAIL_LENGTH) return false;
+  if (!passesStructuralChecks(email, atIndex)) return false;
 
   return RFC5322_EMAIL_REGEX.test(email);
 }
