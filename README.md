@@ -9,7 +9,7 @@
 |------|------|
 | `validator.js` | RFC 5322 형식 및 RFC 3696 길이 제한 검증 |
 | `email.js` | 사용자 배열에서 이메일 추출·필터링·중복 제거 |
-| `auth.js` | 이메일·비밀번호 형식 검증 로그인 |
+| `auth.js` | scrypt 기반 이메일·비밀번호 인증 |
 | `utils.js` | 이메일 정규화 (trim, 소문자 변환) |
 
 ## 요구 사항
@@ -41,7 +41,8 @@ cursor-demo/
 │   ├── validator.js    # 이메일 형식 검증
 │   ├── email.js        # 이메일 추출·필터링
 │   ├── email.test.js   # 테스트
-│   ├── auth.js         # 로그인 검증
+│   ├── auth.js         # 로그인·회원 등록
+│   ├── auth.test.js    # 인증 테스트
 │   └── utils.js        # 이메일 정규화
 ├── docs/
 │   └── validator.md    # validator.js 스펙 문서
@@ -75,14 +76,17 @@ const users = [
 getValidEmails(users); // ['alice@example.com']
 ```
 
-### `login(email, password)`
+### `login(email, password)` / `registerUser(email, password)`
 
-이메일·비밀번호 형식을 검증합니다.
+scrypt 해시 기반으로 인증합니다.
 
 ```js
-import { login } from './src/auth.js';
+import { login, registerUser } from './src/auth.js';
 
 login('alice@example.com', 'secret');
+// { success: true }
+
+registerUser('bob@example.com', 'mypassword');
 // { success: true }
 
 login('invalid', '');
@@ -96,7 +100,7 @@ login('invalid', '');
 ```js
 import { normalizeEmail } from './src/utils.js';
 
-normalizeEmail('  Alice@Example.COM  '); //F// 'alice@example.com'
+normalizeEmail('  Alice@Example.COM  '); // 'alice@example.com'
 ```
 
 ## 스펙 문서
@@ -114,16 +118,16 @@ normalizeEmail('  Alice@Example.COM  '); //F// 'alice@example.com'
 - **`isValidEmail`** — RFC 5322 형식 검증 및 RFC 3696 길이 제한(로컬 파트 64자, 전체 254자) 적용
 - **IP 리터럴 검증 개선** — IPv4 옥텟에서 `00` 등 불법 값 거부
 - **`email.js`** — 사용자 배열에서 이메일 추출(`extractEmails`), 유효 이메일 필터링(`getValidEmails`), 중복 제거(`uniqueValidEmails`)
-- **`auth.js`** — 이메일·비밀번호 형식 검증 로그인(`login`)
+- **`auth.js`** — scrypt 기반 인증(`login`, `registerUser`)
 - **`utils.js`** — 이메일 정규화(`normalizeEmail`: trim, 소문자 변환)
-- **테스트** — Node.js 내장 `node:test`로 `extractEmails`, `getValidEmails` 검증 (`npm test`)
+- **테스트** — Node.js 내장 `node:test`로 이메일·인증 모듈 검증 (`npm test`)
 - **문서** — `docs/validator.md` 스펙 문서 및 `README.md`(설치, API 사용법, 프로젝트 구조)
 
 #### 🐛 버그 수정
 
 - 해당 없음
 
-####.#### 🧹 기타
+#### 🧹 기타
 
 - ES Module(`"type": "module"`) 프로젝트 구조 및 엔트리 포인트(`src/index.js`) 구성
 - 외부 npm 의존성 없음 (Node.js 18+)
